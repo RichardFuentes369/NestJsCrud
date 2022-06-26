@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Headers, HttpStatus, Param, Post, Put, Query } from '@nestjs/common';
 
 import { CreateTaskDto } from '../dto/create-task.dto'
 
@@ -15,8 +15,11 @@ export class TaskController {
         *Por peticion a bd
     */
     @Get('/')
-    getTasks() {
-        return this.taskService.getTasksDb();
+    getTasks(@Query() query, @Headers() headers) {
+        if (query.page && query.perPage) {
+            return this.taskService.getTasksDb(query.page, query.sort, query.perPage);
+        }
+        return this.taskService.errorParams();
     }
 
     @Get('/:taskId')

@@ -19,8 +19,63 @@ export class TaskService {
         private taskRepository: Repository<Task>,
     ) { }
 
-    getTasksDb(): Promise<Task[]> {
-        return this.taskRepository.find();
+    errorParams() {
+        throw new NotFoundException(`Esta ruta requiere los parametros page, perPage como datos obligatorios y sort como opcional`);
+    }
+
+    async getTasksDb(page: number, sort: any, perPage: number): Promise<{}> {
+
+        /**
+         * Valido que El atributo pagina sea un numero positivo
+         * Valido que el atributo perPage sea un numero positivo
+         * Valido que el sort sea un string con condicion asc o desc
+         */
+
+        if (isNaN(page) || page <= 0) throw new NotFoundException(`
+            El parametro ingresado en la ruta con identificador page, solo recibe numeros enteros positivos mayores a 0 
+        `);
+
+        if (isNaN(perPage) || perPage <= 0) throw new NotFoundException(`
+            El parametro ingresado en la ruta con identificador perPage, solo recibe numeros enteros positivos mayores a 0 
+        `);
+
+        if (sort) {
+            if (sort != 'asc' && sort != 'desc') throw new NotFoundException(`
+                El parametro ingresado en la ruta con identificador sort, solo recibe palabras asc para ordenar ascendentemente o desc para ordenar descendentemente
+            `);
+        }
+
+        /**
+         * Instancio el modelo y lo guardo en la variable query  
+         * Consulta la cantidad de registros que tiene la tabla y lo guarda en la variable totalRows
+         * Saco las paginas totales con respecto a los registos de la base de datos y la cantidad de registros que voy a mostrar por pagina (machetazo, lo aproximo al numero siguiente)
+         * Ordeno por id
+         * Armo la respuesta
+         */
+
+        let query = this.taskRepository.createQueryBuilder('task');
+
+        let totalRecords = await query.getCount()
+
+        let totalPages = Math.ceil(totalRecords / perPage);
+
+        if (sort) {
+            query.orderBy('task.id', sort.toUpperCase())
+        }
+
+        let response = {
+            data: await query.offset((page - 1) * perPage).limit(perPage).getMany(),
+            currentPage: page,
+            perPage: perPage,
+            prevPage: (page == 1) ? null : page - 1,
+            nextPage: (page == totalPages) ? null : parseInt(page as any) + 1,
+            totalPages: totalPages,
+            totalRecords: totalRecords,
+            sort: sort
+        }
+
+        return response;
+
     }
 
     async getTaskDb(id: number): Promise<Task> {
@@ -57,7 +112,6 @@ export class TaskService {
 
         this.taskRepository.update(id, task)
     }
-
 
     async remove(id: string): Promise<void> {
         await this.taskRepository.delete(id);
