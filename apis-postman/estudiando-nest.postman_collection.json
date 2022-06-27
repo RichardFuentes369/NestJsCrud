@@ -6,7 +6,7 @@
 	},
 	"item": [
 		{
-			"name": "first-api",
+			"name": "task",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -42,6 +42,38 @@
 						{
 							"key": "page",
 							"value": "1"
+						},
+						{
+							"key": "sort",
+							"value": "asc"
+						},
+						{
+							"key": "perPage",
+							"value": "5"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "users",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{server}}{{port}}/api/users?page=17&sort=asc&perPage=5",
+					"host": [
+						"{{server}}{{port}}"
+					],
+					"path": [
+						"api",
+						"users"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "17"
 						},
 						{
 							"key": "sort",

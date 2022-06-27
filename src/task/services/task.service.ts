@@ -47,7 +47,7 @@ export class TaskService {
 
         /**
          * Instancio el modelo y lo guardo en la variable query  
-         * Consulta la cantidad de registros que tiene la tabla y lo guarda en la variable totalRows
+         * Consulta la cantidad de registros que tiene la tabla y lo guarda en la variable totalRecords
          * Saco las paginas totales con respecto a los registos de la base de datos y la cantidad de registros que voy a mostrar por pagina (machetazo, lo aproximo al numero siguiente)
          * Ordeno por id
          * Armo la respuesta
